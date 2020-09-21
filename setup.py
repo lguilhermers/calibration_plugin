@@ -9,7 +9,7 @@ __maintainer__ = "Daren Thomas"
 __email__ = "cea@arch.ethz.ch"
 __status__ = "Production"
 
-setup(name='cea_plugin_template',
+setup(name='calibration_plugin',
       version=__version__,
       description="A template plugin for the City Energy Analyst",
       license='MIT',

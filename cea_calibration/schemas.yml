@@ -1,0 +1,7 @@
+get_monthly_measurements:
+  created_by:
+  file_path: inputs/measurements/monthly_measurements.csv
+  file_type: csv
+  schema:
+    columns:
+  used_by: [validation]

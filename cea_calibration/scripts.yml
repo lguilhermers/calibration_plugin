@@ -1,0 +1,10 @@
+Demand Calibration:
+
+  - name: validation
+    label: Validation
+    description: Validate the energy demand of buildings comparing with energy measurements.
+    interfaces: [cli, dashboard]
+    module: cea_calibration.validation
+    parameters: ["general:scenario"]
+    input-files:
+      - [get_monthly_measurements]
