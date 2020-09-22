@@ -8,3 +8,12 @@ Demand Calibration:
     parameters: ["general:scenario"]
     input-files:
       - [get_monthly_measurements]
+
+  - name: calibration
+    label: Calibrate
+    description: Calibrate the energy demand of buildings comparing with energy measurements.
+    interfaces: [cli, dashboard]
+    module: cea_calibration.calibration
+    parameters: ["general:scenario"]
+    input-files:
+      - [get_monthly_measurements]

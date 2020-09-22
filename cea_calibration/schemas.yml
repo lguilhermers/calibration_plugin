@@ -4,4 +4,4 @@ get_monthly_measurements:
   file_type: csv
   schema:
     columns:
-  used_by: [validation]
+  used_by: [validation, calibration]
