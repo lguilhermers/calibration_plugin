@@ -133,8 +133,8 @@ def validation(scenario_list,
         n_calib = validation_output['calibrated_buildings'].sum()
         score = validation_output['score'].sum()
 
-        global_variables.global_validation_n_calibrated.append(n_calib)
-        global_variables.global_validation_percentage.append((n_calib / number_of_buildings) * 100)
+        global_validation_n_calibrated.append(n_calib)
+        global_validation_percentage.append((n_calib / number_of_buildings) * 100)
 
     print('The number of calibrated buildings is', n_calib)
     print('The final score is', score)
@@ -183,7 +183,7 @@ def main(config):
     :return:
     """
     assert os.path.exists(config.scenario), 'Scenario not found: %s' % config.scenario
-    locator = cea.inputlocator.InputLocator(config.scenario)
+    locator = cea.inputlocator.InputLocator(config.scenario, config.plugins)
     measured_building_names = get_measured_building_names(locator)
     scenario_list = [config.scenario]
     locators_of_scenarios = [locator]

@@ -84,7 +84,8 @@ def modify_monthly_multiplier(locator, config, measured_building_names):
 
     ##calculate monthly multiplier based on buildings real consumption (adjusts monthly measured loads in CEA for each building accordingly to what is observed in real life)
     for building_name in measured_building_names:
-        monthly_measured_data = pd.read_csv(locator.get_monthly_measurements())
+        # monthly_measured_data = pd.read_csv(locator.get_monthly_measurements())
+        monthly_measured_data = locator.get_monthly_measurements.read()
         fields_to_extract = ['Name'] + MONTHS_IN_YEAR_NAMES
         monthly_measured_demand = monthly_measured_data[fields_to_extract].set_index('Name')
         monthly_measured_demand = monthly_measured_demand.loc[building_name]

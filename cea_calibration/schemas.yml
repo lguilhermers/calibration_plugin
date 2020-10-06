@@ -4,11 +4,13 @@ get_monthly_measurements:
   file_type: csv
   schema:
     columns:
+      JANUARY:
+        type: float
   used_by: [validation, calibration]
 
-get_project_calibrationresults:
+get_project_calibration_results:
   created_by:
-  file_path: project/outputs/data/calibration_results/calibrationresults.csv
+  file_path: ../demand_calibration_results.csv
   file_type: csv
   schema:
     columns:
@@ -39,8 +41,8 @@ get_totaloccupancy:
 #    return os.path.join(self.scenario, "outputs", "data", "totaloccupancy.csv")
 
 
-def get_measurements_folder(self):
-    return self._ensure_folder(self.scenario, 'inputs', 'measurements')
+#def get_measurements_folder(self):
+#    return self._ensure_folder(self.scenario, 'inputs', 'measurements')
 
 
 #def get_annual_measurements(self):
