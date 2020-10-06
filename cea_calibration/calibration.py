@@ -10,14 +10,12 @@ from cea.utilities.dbf import dbf_to_dataframe, dataframe_to_dbf
 from cea.datamanagement import archetypes_mapper
 from cea.demand import demand_main, schedule_maker
 from cea.demand.schedule_maker import schedule_maker
-from cea.examples import validation
+from . import validation
 from cea.utilities.schedule_reader import read_cea_schedule, save_cea_schedule
 from collections import OrderedDict
 from hyperopt import fmin, tpe, hp, Trials
 import pandas as pd
 import numpy as np
-from cea.constants import MONTHS_IN_YEAR_NAMES
-from cea.examples.validation import get_measured_building_names
 import glob2
 import os
 
@@ -139,8 +137,8 @@ def calc_score(static_params, dynamic_params):
     measured_building_names_of_scenarios = []
     for scenario in scenario_list:
         config.scenario = scenario
-        locator = cea.inputlocator.InputLocator(config.scenario)
-        measured_building_names = get_measured_building_names(locator)
+        locator = cea.inputlocator.InputLocator(config.scenario, config.plugins)
+        measured_building_names = validation.get_measured_building_names(locator)
         modify_monthly_multiplier(locator, config, measured_building_names)
 
         # store for later use
@@ -186,6 +184,7 @@ def calc_score(static_params, dynamic_params):
         config.demand.buildings = measured_building_names
         demand_main.demand_calculation(locator, config)
 
+
     # calculate the score
     score = validation.validation(scenario_list=scenario_list,
                                   locators_of_scenarios=locators_of_scenarios,
@@ -227,9 +226,10 @@ def calibration(config, list_scenarios):
     print('Best Params: {}'.format(best))
     print(trials.losses())
 
-    import cea.examples.global_variables as global_variables
-    validation_n_calib = pd.DataFrame(global_variables.global_validation_n_calibrated)
-    validation_percentage = pd.DataFrame(global_variables.global_validation_percentage)
+    validation_n_calib = pd.DataFrame(global_validation_n_calibrated)
+    print(validation_n_calib)
+    validation_percentage = pd.DataFrame(global_validation_percentage)
+    print(validation_percentage)
 
     results = pd.DataFrame()
     for counter in range(0, max_evals):

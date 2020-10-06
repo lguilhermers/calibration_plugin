@@ -14,6 +14,7 @@ Demand Calibration:
     description: Calibrate the energy demand of buildings comparing with energy measurements.
     interfaces: [cli, dashboard]
     module: cea_calibration.calibration
-    parameters: ["general:scenario"]
+    parameters: ["general:scenario", "schedule-maker:buildings", "schedule-maker:schedule-model", "general:multiprocessing", "general:number-of-cpus-to-keep-free",
+     "demand:buildings", "demand:use-dynamic-infiltration-calculation", "demand:resolution-output", "demand:loads-output", "demand:massflows-output", "demand:temperatures-output", "general:debug"]
     input-files:
       - [get_monthly_measurements]

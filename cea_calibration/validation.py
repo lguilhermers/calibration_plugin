@@ -192,7 +192,6 @@ def main(config):
     validation(scenario_list,
                locators_of_scenarios,
                measured_building_names_of_scenarios,
-               annual=False,
                monthly=True,
                load='GRID',
                )
