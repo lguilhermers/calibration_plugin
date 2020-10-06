@@ -5,3 +5,51 @@ get_monthly_measurements:
   schema:
     columns:
   used_by: [validation, calibration]
+
+get_project_calibrationresults:
+  created_by:
+  file_path: project/outputs/data/calibration_results/calibrationresults.csv
+  file_type: csv
+  schema:
+    columns:
+  used_by: [validation, calibration]
+
+get_totaloccupancy:
+  created_by:
+  file_path: scenario/outputs/data/totaloccupancy.csv
+  file_type: csv
+  schema:
+    columns:
+  used_by: [validation, calibration]
+
+
+
+#def get_calibrationresults(self):
+#    """scenario/outputs/data/calibration_results/calibrationresults.csv"""
+#    return os.path.join(self.scenario, 'outputs', 'data', 'calibration_results', 'calibrationresults.csv')
+#
+#
+#def get_project_calibrationresults(self):
+#    """project/outputs/calibration_results/calibrationresults.csv"""
+#    return os.path.join(self.project, 'outputs', 'calibration_results', 'calibrationresults.csv')
+#
+#
+#def get_totaloccupancy(self):
+#    """scenario/outputs/data/totaloccupancy.csv"""
+#    return os.path.join(self.scenario, "outputs", "data", "totaloccupancy.csv")
+
+
+def get_measurements_folder(self):
+    return self._ensure_folder(self.scenario, 'inputs', 'measurements')
+
+
+#def get_annual_measurements(self):
+#    return os.path.join(self.get_measurements_folder(), 'annual_measurements.csv')
+#
+#
+#def get_monthly_measurements(self):
+#    return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
+#
+#
+#def get_global_monthly_measurements(self):
+#    return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')

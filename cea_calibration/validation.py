@@ -3,54 +3,79 @@ This tool compares measured data (observed) with model outputs (predicted), used
 """
 from __future__ import division
 from __future__ import print_function
-
 import os
 from math import sqrt
-
 import pandas as pd
 from sklearn.metrics import mean_squared_error as calc_mean_squared_error
-
 import cea.config
 import cea.inputlocator
-from cea.constants import MONTHS_IN_YEAR_NAMES
-import cea.examples.global_variables as global_variables
+# from cea.constants import MONTHS_IN_YEAR_NAMES
+# import cea.examples.global_variables as global_variables
 
+
+# def outputdatafolder(self):
+#     return self._ensure_folder(self.scenario, 'outputs', 'data')
+#
+#
+# def get_calibrationresults(self):
+#     """scenario/outputs/data/calibration_results/calibrationresults.csv"""
+#     return os.path.join(self.scenario, 'outputs', 'data', 'calibration_results', 'calibrationresults.csv')
+#
+#
+# def get_project_calibrationresults(self):
+#     """project/outputs/calibration_results/calibrationresults.csv"""
+#     return os.path.join(self.project, 'outputs', 'calibration_results', 'calibrationresults.csv')
+#
+#
+# def get_totaloccupancy(self):
+#     """scenario/outputs/data/totaloccupancy.csv"""
+#     return os.path.join(self.scenario, "outputs", "data", "totaloccupancy.csv")
+#
+#
+# def get_measurements_folder(self):
+#     return self._ensure_folder(self.scenario, 'inputs', 'measurements')
+#
+#
+# def get_annual_measurements(self):
+#     return os.path.join(self.get_measurements_folder(), 'annual_measurements.csv')
+#
+#
+# def get_monthly_measurements(self):
+#     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
+#
+#
+# def get_global_monthly_measurements(self):
+#     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
+
+global_validation_n_calibrated = []
+global_validation_percentage = []
+
+MONTHS_IN_YEAR_NAMES = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL',
+                        'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER',
+                        'OCTOBER', 'NOVEMBER', 'DECEMBER']
+
+__author__ = "Luis Santos"
+__copyright__ = "Copyright 2020, Architecture and Building Systems - ETH Zurich"
+__credits__ = ["Luis Santos, Jimeno Fonseca, Daren Thomas"]
+__license__ = "MIT"
+__version__ = "1.0"
+__maintainer__ = "Daren Thomas"
+__email__ = "cea@arch.ethz.ch"
+__status__ = "Production"
 
 def validation(scenario_list,
                locators_of_scenarios,
                measured_building_names_of_scenarios,
-               annual=False,
                monthly=True,
                load='GRID',
                ):
     """
     This tool compares observed (real life measured data) and predicted (output of the model data) values.
-    Annual data is compared in terms of MBE and monthly data in terms of NMBE and CvRMSE (follwing ASHRAE Guideline 14-2002).
-    A new input folder with measurements has to biased_error created, with a csv each for monthly and annual data provided as input for this tool.
-    A new output csv is generated providing for each building (if measured data is available): building ID | ZIP Code | Measured data (observed) | Modelled data (predicted) | Model errors #missing
+    Monthly data is compared in terms of NMBE and CvRMSE (follwing ASHRAE Guideline 14-2014).
+    A new input folder with measurements has to be created, with a csv each for monthly data provided as input for this tool.
+    The input file contains: Name (CEA ID)| ZipCode (optional) | Monthly Data (JAN - DEC) | Type of equivalent variable in CEA (GRID_kWh is the default for total electricity consumption)
+    The script prints the NBME and CvRMSE for each building. It also outputs the number of calibrated buildings and a score metric (calibrated buildings weighted by their energy consumption)
     """
-
-    # type of validation to run (select only the ones that have a corresponding csv in the inputs folder)
-    # ## annual validation
-    # if annual:
-    #     print("annual validation")
-    #
-    #     # extract measured data (format: BuildingID (corresponding to CEA model) | ZipCode (optional) | Annual energy consumed (kWh)
-    #     annual_measured_data = pd.read_csv(locator.get_annual_measurements())
-    #
-    #     # extract model output
-    #     annual_modelled_data = pd.read_csv(locator.get_total_demand())
-    #
-    #     # mege the datasets
-    #     merged_annual = annual_modelled_data.merge(annual_measured_data, how='inner',
-    #                                                on='Name', suffixes=('_model',
-    #                                                                     '_measured'))  # extract the modelled buildings that have a corresponding Name (Building ID) simulated by CEA
-    #     annual_modelled_demand = merged_annual[load + '_MWhyr' + '_model']
-    #     annual_measured_demand = merged_annual[load + '_MWhyr' + '_measured']
-    #
-    #     # calculate errors
-    #     biased_error_annual_data = ((annual_modelled_demand - annual_measured_demand) / annual_measured_demand) * 100
-    #     print(biased_error_annual_data)
 
     ## monthly validation
     if monthly:
@@ -62,12 +87,12 @@ def validation(scenario_list,
             list_of_scores = []
             number_of_calibrated = []
             number_of_buildings = number_of_buildings + len(measured_building_names)
-            # get measured data for buiildings in this scenario
+            # get measured data for buildings in this scenario
             monthly_measured_data = pd.read_csv(locator.get_monthly_measurements())
 
             # loop in the measured buildings of this scenario
             for building_name in measured_building_names:  # number of buildings that have real data available
-                # extract measured data (format: BuildingID (corresponding to CEA model) | ZipCode (optional) | monthly energy consumed (kWh) (Jan-Dec)
+                # extract measured data
                 print('For building', building_name, 'the errors are')
                 fields_to_extract = ['Name'] + MONTHS_IN_YEAR_NAMES
                 monthly_measured_demand = monthly_measured_data[fields_to_extract].set_index('Name')
@@ -130,13 +155,11 @@ def calc_errors_per_building(load, monthly_data):
 
 def calc_building_score(cv_root_mean_squared_error, monthly_data, normalized_mean_biased_error):
     # indicates if the building is calibrated or not
-    if abs(
-            normalized_mean_biased_error) < 5 and cv_root_mean_squared_error < 15:  # LS#NMBE<5 and CVRMSE <15 for ASHRAE monthly
+    if abs(normalized_mean_biased_error) < 5 and cv_root_mean_squared_error < 15:  #a building is considered calibrated if NMBE<5 and CVRMSE <15 (ASHRAE Guideline for monthly data)
         ind_calib_building = 1
     else:
         ind_calib_building = 0
     # weights the calibration by building energy consumption
-    # ind_score_building = ind_calib_building * 1 #LS#to test max number of buildings calibrated
     ind_score_building = ind_calib_building * sum(monthly_data['measurements'])
     return ind_calib_building, ind_score_building
 

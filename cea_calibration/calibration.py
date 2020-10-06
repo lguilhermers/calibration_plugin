@@ -1,11 +1,9 @@
 """
-This tool calibrates a set of inputs from CEA to reduce the error between model outputs (predicted) and measured data (observed)
+This tool calibrates a set of inputs from CEA to minimize the error between model outputs (predicted) and measured data (observed)
 """
 from __future__ import division
 from __future__ import print_function
-
 from hyperopt.pyll import scope
-
 import cea.config
 import cea.inputlocator
 from cea.utilities.dbf import dbf_to_dataframe, dataframe_to_dbf
@@ -23,11 +21,52 @@ from cea.examples.validation import get_measured_building_names
 import glob2
 import os
 
+# def outputdatafolder(self):
+#     return self._ensure_folder(self.scenario, 'outputs', 'data')
+#
+#
+# def get_calibrationresults(self):
+#     """scenario/outputs/data/calibration_results/calibrationresults.csv"""
+#     return os.path.join(self.scenario, 'outputs', 'data', 'calibration_results', 'calibrationresults.csv')
+#
+#
+# def get_project_calibrationresults(self):
+#     """project/outputs/calibration_results/calibrationresults.csv"""
+#     return os.path.join(self.project, 'outputs', 'calibration_results', 'calibrationresults.csv')
+#
+#
+# def get_totaloccupancy(self):
+#     """scenario/outputs/data/totaloccupancy.csv"""
+#     return os.path.join(self.scenario, "outputs", "data", "totaloccupancy.csv")
+#
+#
+# def get_measurements_folder(self):
+#     return self._ensure_folder(self.scenario, 'inputs', 'measurements')
+#
+#
+# def get_annual_measurements(self):
+#     return os.path.join(self.get_measurements_folder(), 'annual_measurements.csv')
+#
+#
+# def get_monthly_measurements(self):
+#     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
+#
+#
+# def get_global_monthly_measurements(self):
+#     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
+
+global_validation_n_calibrated = []
+global_validation_percentage = []
+
+MONTHS_IN_YEAR_NAMES = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL',
+                        'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER',
+                        'OCTOBER', 'NOVEMBER', 'DECEMBER']
+
 __author__ = "Luis Santos"
-__copyright__ = "Copyright 2018, Architecture and Building Systems - ETH Zurich"
-__credits__ = ["Luis Santos, Jimeno Fonseca"]
+__copyright__ = "Copyright 2020, Architecture and Building Systems - ETH Zurich"
+__credits__ = ["Luis Santos, Jimeno Fonseca, Daren Thomas"]
 __license__ = "MIT"
-__version__ = "0.1"
+__version__ = "1.0"
 __maintainer__ = "Daren Thomas"
 __email__ = "cea@arch.ethz.ch"
 __status__ = "Production"
@@ -43,7 +82,7 @@ def modify_monthly_multiplier(locator, config, measured_building_names):
                       update_schedule_operation_cea=True,
                       buildings=[])
 
-    ##calculate monthly multiplier based on buildings real consumption
+    ##calculate monthly multiplier based on buildings real consumption (adjusts monthly measured loads in CEA for each building accordingly to what is observed in real life)
     for building_name in measured_building_names:
         monthly_measured_data = pd.read_csv(locator.get_monthly_measurements())
         fields_to_extract = ['Name'] + MONTHS_IN_YEAR_NAMES
@@ -64,10 +103,13 @@ def modify_monthly_multiplier(locator, config, measured_building_names):
 def calc_score(static_params, dynamic_params):
     """
     This tool reduces the error between observed (real life measured data) and predicted (output of the model data) values by changing some of CEA inputs.
-    Annual data is compared in terms of MBE and monthly data in terms of NMBE and CvRMSE (follwing ASHRAE Guideline 14-2002).
-    A new input folder with measurements has to be created, with a csv each for monthly and annual data provided as input for this tool.
+    Monthly data is compared in terms of NMBE and CvRMSE (follwing ASHRAE Guideline 14-2014).
+    A new input folder with measurements has to be created, with a csv each for monthly data provided as input for this tool.
+    The input file contains: Name (CEA ID)| ZipCode (optional) | Monthly Data (JAN - DEC) | Type of equivalent variable in CEA (GRID_kWh is the default for total electricity consumption)
+    The script prints the NBME and CvRMSE for each building in each iteration. It also outputs the number of calibrated buildings and a score metric (calibrated buildings weighted by their energy consumption).
     A new output csv is generated providing the calibration results (iteration number, parameters tested and results(score metric))
     """
+
     ## define set of CEA inputs to be calibrated and initial guess values
     SEED = dynamic_params['SEED']
     np.random.seed (SEED)                   #initalize seed numpy randomly npy.random.seed (once call the function) - inside put the seed
@@ -150,35 +192,13 @@ def calc_score(static_params, dynamic_params):
 
     return score
 
-    ## save the iteration number, the value of each parameter tested and the score obtained ***
+    ## save the iteration number, the value of each parameter tested and the score obtained
 
 
 def calibration(config, list_scenarios):
-    max_evals = 2
+    max_evals = 2 #maximum number of iterations allowed by the algorithm to run
 
     #  define a search space
-    # DYNAMIC_PARAMETERS = OrderedDict([('SEED', scope.int(hp.uniform('SEED', 0.0, 100.0))),
-    #                                   ('Hs_ag', hp.uniform('Hs_ag', 0.1, 0.4)),
-    #                                   ('Tcs_set_C', hp.uniform('Tcs_set_C', 23, 27)),
-    #                                   ('Es', hp.uniform('Es', 0.4, 0.8)),
-    #                                   ('Ns', hp.uniform('Ns', 0.4, 0.8)),
-    #                                   ('Occ_m2pax', hp.uniform('Occ_m2pax', 35.0, 55.0)),
-    #                                   ('Vww_lpdpax', hp.uniform('Vww_lpdpax', 25.0, 35.0)),
-    #                                   ('Ea_Wm2', hp.uniform('Ea_Wm2', 1.0, 4.0)),
-    #                                   ('El_Wm2', hp.uniform('El_Wm2', 1.0, 4.0))
-    #                                   ])
-
-    # DYNAMIC_PARAMETERS = OrderedDict([('SEED', scope.int(hp.uniform('SEED', 0.0, 100.0))),
-    #                                   ('Hs_ag', hp.uniform('Hs_ag', 0.175, 0.176)),
-    #                                   ('Tcs_set_C', hp.uniform('Tcs_set_C', 24, 24.1)),
-    #                                   ('Es', hp.uniform('Es', 0.5, 0.51)),
-    #                                   ('Ns', hp.uniform('Ns', 0.5, 0.51)),
-    #                                   ('Occ_m2pax', hp.uniform('Occ_m2pax', 40.0, 40.1)),
-    #                                   ('Vww_lpdpax', hp.uniform('Vww_lpdpax', 27.5, 27.6)),
-    #                                   ('Ea_Wm2', hp.uniform('Ea_Wm2', 1.75, 1.76)),
-    #                                   ('El_Wm2', hp.uniform('El_Wm2', 1.75, 1.76))
-    #                                   ])
-
     DYNAMIC_PARAMETERS = OrderedDict([('SEED', scope.int(hp.uniform('SEED', 0.0, 100.0))),
                                       ('Hs_ag', hp.uniform('Hs_ag', 0.1, 0.25)),
                                       ('Tcs_set_C', hp.uniform('Tcs_set_C', 24, 26)),
@@ -193,7 +213,7 @@ def calibration(config, list_scenarios):
 
     # define the objective
     def objective(dynamic_params):
-        return -1.0 * calc_score(STATIC_PARAMS, dynamic_params)
+        return -1.0 * calc_score(STATIC_PARAMS, dynamic_params) #score is set to negative as optimization looks for minimum
 
     # run the algorithm
     trials = Trials()
