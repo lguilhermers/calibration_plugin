@@ -4,8 +4,69 @@ get_monthly_measurements:
   file_type: csv
   schema:
     columns:
+      Name:
+        description: Unique building ID, equivalent to the ID in CEA.
+        type: string
+        unit: NA
+        values: alphanumeric
+      ZipCode:
+        description: Unique building ID which identifies the building in real life (optional).
+        type: string
+        unit: NA
+        values: alphanumeric
       JANUARY:
+        description: monthly measurement for this month
         type: float
+        values: '{0.0...n}'
+      FEBRUARY:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      MARCH:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      APRIL:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      MAY:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      JUNE:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      JULY:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      AUGUST:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      SEPTEMBER:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      OCTOBER:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      NOVEMBER:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      DECEMBER:
+        description: monthly measurement for this month
+        type: float
+        values: '{0.0...n}'
+      VARIABLE:
+        description: type of variable in CEA equivalent to monthly measurements
+        type: string
+        unit: NA
+        values: alphanumeric
   used_by: [validation, calibration]
 
 get_project_calibration_results:
@@ -14,44 +75,69 @@ get_project_calibration_results:
   file_type: csv
   schema:
     columns:
+      eval:
+        description: Number of iteration
+        type: integer
+        unit: NA
+        values: '{0...n}'
+      SEED:
+        description: Seed parameter, randomizes other parameters within a certain range for each building
+        type: float
+        unit: NA
+        values: '{0.0...n}'
+      Hs_ag:
+        description: Fraction of above ground gross floor area air-conditioned.
+        type: float
+        unit: NA
+        values: '{0.0...1.0}'
+      Tcs_set_C:
+        description: Setpoint temperature for cooling system
+        type: float
+        unit: degrees C
+        values: '{0.0...n}'
+      Ea_Wm2:
+        description: Peak specific electrical load due to appliances (computers and devices)
+        type: float
+        unit: W/m2
+        values: '{0.0...n}'
+      El_Wm2:
+        description: Peak specific electrical load due to artificial lighting
+        type: float
+        unit: W/m2
+        values: '{0.0...n}'
+      Es:
+        description: Fraction of gross floor area with electrical demands.
+        type: float
+        unit: NA
+        values: '{0.0...1.0}'
+      Ns:
+        description: Fraction of net gross floor area.
+        type: float
+        unit: NA
+        values: '{0.0...1.0}'
+      Occ_m2pax:
+        description: Occupancy density.
+        type: float
+        unit: m2/pax
+        values: '{0.0...n}'
+      Vww_lpdpax:
+        description: Peak specific daily hot water consumption
+        type: float
+        unit: L/day.pax
+        values: '{0.0...n}'
+      score_weighted_demand:
+        description: total energy consumption from calibrated buildings
+        type: integer
+        unit: kWh
+        values: '{0...n}'
+      buildings_calibrated:
+        description: number of buildings considered calibrated
+        type: integer
+        unit: NA
+        values: '{0.0...n}'
+      percentage_buildings_calibrated_%:
+        description: percentage of buildings considered calibrated
+        type: float
+        unit: NA
+        values: '{0.0...100.0}'
   used_by: [validation, calibration]
-
-get_totaloccupancy:
-  created_by:
-  file_path: scenario/outputs/data/totaloccupancy.csv
-  file_type: csv
-  schema:
-    columns:
-  used_by: [validation, calibration]
-
-
-
-#def get_calibrationresults(self):
-#    """scenario/outputs/data/calibration_results/calibrationresults.csv"""
-#    return os.path.join(self.scenario, 'outputs', 'data', 'calibration_results', 'calibrationresults.csv')
-#
-#
-#def get_project_calibrationresults(self):
-#    """project/outputs/calibration_results/calibrationresults.csv"""
-#    return os.path.join(self.project, 'outputs', 'calibration_results', 'calibrationresults.csv')
-#
-#
-#def get_totaloccupancy(self):
-#    """scenario/outputs/data/totaloccupancy.csv"""
-#    return os.path.join(self.scenario, "outputs", "data", "totaloccupancy.csv")
-
-
-#def get_measurements_folder(self):
-#    return self._ensure_folder(self.scenario, 'inputs', 'measurements')
-
-
-#def get_annual_measurements(self):
-#    return os.path.join(self.get_measurements_folder(), 'annual_measurements.csv')
-#
-#
-#def get_monthly_measurements(self):
-#    return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
-#
-#
-#def get_global_monthly_measurements(self):
-#    return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')

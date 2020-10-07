@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error as calc_mean_squared_error
 import cea.config
 import cea.inputlocator
+from . import global_variables
 # from cea.constants import MONTHS_IN_YEAR_NAMES
 # import cea.examples.global_variables as global_variables
 
@@ -47,8 +48,8 @@ import cea.inputlocator
 # def get_global_monthly_measurements(self):
 #     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
 
-global_validation_n_calibrated = []
-global_validation_percentage = []
+# global_validation_n_calibrated = []
+# global_validation_percentage = []
 
 MONTHS_IN_YEAR_NAMES = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL',
                         'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER',
@@ -133,8 +134,8 @@ def validation(scenario_list,
         n_calib = validation_output['calibrated_buildings'].sum()
         score = validation_output['score'].sum()
 
-        global_validation_n_calibrated.append(n_calib)
-        global_validation_percentage.append((n_calib / number_of_buildings) * 100)
+        global_variables.global_validation_n_calibrated.append(n_calib)
+        global_variables.global_validation_percentage.append((n_calib / number_of_buildings) * 100)
 
     print('The number of calibrated buildings is', n_calib)
     print('The final score is', score)

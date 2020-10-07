@@ -11,6 +11,7 @@ from cea.datamanagement import archetypes_mapper
 from cea.demand import demand_main, schedule_maker
 from cea.demand.schedule_maker import schedule_maker
 from . import validation
+from . import global_variables
 from cea.utilities.schedule_reader import read_cea_schedule, save_cea_schedule
 from collections import OrderedDict
 from hyperopt import fmin, tpe, hp, Trials
@@ -52,9 +53,6 @@ import os
 #
 # def get_global_monthly_measurements(self):
 #     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
-
-global_validation_n_calibrated = []
-global_validation_percentage = []
 
 MONTHS_IN_YEAR_NAMES = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL',
                         'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER',
@@ -226,10 +224,8 @@ def calibration(config, list_scenarios):
     print('Best Params: {}'.format(best))
     print(trials.losses())
 
-    validation_n_calib = pd.DataFrame(global_validation_n_calibrated)
-    print(validation_n_calib)
-    validation_percentage = pd.DataFrame(global_validation_percentage)
-    print(validation_percentage)
+    validation_n_calib = pd.DataFrame(global_variables.global_validation_n_calibrated)
+    validation_percentage = pd.DataFrame(global_variables.global_validation_percentage)
 
     results = pd.DataFrame()
     for counter in range(0, max_evals):
