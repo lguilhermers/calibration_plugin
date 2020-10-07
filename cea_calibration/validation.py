@@ -146,11 +146,11 @@ def calc_errors_per_building(load, monthly_data):
     biased_error = monthly_data['measurements'] - monthly_data[load + '_kWh']
     normalized_mean_biased_error = ((biased_error.sum() / 12) / monthly_data[
         'measurements'].mean()) * 100  # %
-    print('NMBE:', normalized_mean_biased_error)
+    print('NMBE:', round(normalized_mean_biased_error,1))
     mean_squared_error = calc_mean_squared_error(monthly_data['measurements'], monthly_data[load + '_kWh'])
     root_mean_squared_error = sqrt(mean_squared_error)  # root mean squared error
     cv_root_mean_squared_error = root_mean_squared_error * 100 / monthly_data['measurements'].mean()
-    print('CVRMSE:', cv_root_mean_squared_error)
+    print('CVRMSE:', round(cv_root_mean_squared_error,1))
     return cv_root_mean_squared_error, normalized_mean_biased_error
 
 
