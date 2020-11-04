@@ -9,7 +9,8 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error as calc_mean_squared_error
 import cea.config
 import cea.inputlocator
-from . import global_variables
+from cea_calibration.global_variables import *
+
 # from cea.constants import MONTHS_IN_YEAR_NAMES
 # import cea.examples.global_variables as global_variables
 
@@ -134,8 +135,8 @@ def validation(scenario_list,
         n_calib = validation_output['calibrated_buildings'].sum()
         score = validation_output['score'].sum()
 
-        global_variables.global_validation_n_calibrated.append(n_calib)
-        global_variables.global_validation_percentage.append((n_calib / number_of_buildings) * 100)
+        global_validation_n_calibrated.append(n_calib)
+        global_validation_percentage.append((n_calib / number_of_buildings) * 100)
 
     print('The number of calibrated buildings is', n_calib)
     print('The final score is', score)
