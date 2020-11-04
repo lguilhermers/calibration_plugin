@@ -20,4 +20,5 @@ setup(name='calibration_plugin',
       py_modules=[''],
       packages=find_packages(),
       package_data={},
+      install_requires=['glob2', 'hyperopt'],
       include_package_data=True)
