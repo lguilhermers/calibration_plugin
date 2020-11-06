@@ -10,8 +10,8 @@ from cea.utilities.dbf import dbf_to_dataframe, dataframe_to_dbf
 from cea.datamanagement import archetypes_mapper
 from cea.demand import demand_main, schedule_maker
 from cea.demand.schedule_maker import schedule_maker
-from . import validation
-from . import global_variables
+from cea_calibration.validation import *
+from cea_calibration.global_variables import *
 from cea.utilities.schedule_reader import read_cea_schedule, save_cea_schedule
 from collections import OrderedDict
 from hyperopt import fmin, tpe, hp, Trials
@@ -136,7 +136,7 @@ def calc_score(static_params, dynamic_params):
     for scenario in scenario_list:
         config.scenario = scenario
         locator = cea.inputlocator.InputLocator(config.scenario, config.plugins)
-        measured_building_names = validation.get_measured_building_names(locator)
+        measured_building_names = get_measured_building_names(locator)
         modify_monthly_multiplier(locator, config, measured_building_names)
 
         # store for later use
@@ -184,9 +184,8 @@ def calc_score(static_params, dynamic_params):
 
 
     # calculate the score
-    score = validation.validation(scenario_list=scenario_list,
-                                  locators_of_scenarios=locators_of_scenarios,
-                                  measured_building_names_of_scenarios=measured_building_names_of_scenarios)
+    score = validation(scenario_list=scenario_list, locators_of_scenarios=locators_of_scenarios,
+                       measured_building_names_of_scenarios=measured_building_names_of_scenarios)
 
     return score
 
@@ -224,8 +223,8 @@ def calibration(config, list_scenarios):
     print('Best Params: {}'.format(best))
     print(trials.losses())
 
-    validation_n_calib = pd.DataFrame(global_variables.global_validation_n_calibrated)
-    validation_percentage = pd.DataFrame(global_variables.global_validation_percentage)
+    validation_n_calib = pd.DataFrame(global_validation_n_calibrated)
+    validation_percentage = pd.DataFrame(global_validation_percentage)
 
     results = pd.DataFrame()
     for counter in range(0, max_evals):
@@ -258,10 +257,8 @@ def calibration(config, list_scenarios):
 
 def main(config):
     """
-    This is the main entry point to your script. Any parameters used by your script must be present in the ``config``
-    parameter. The CLI will call this ``main`` function passing in a ``config`` object after adjusting the configuration
-    to reflect parameters passed on the command line - this is how the ArcGIS interface interacts with the scripts
-    BTW.
+    The CLI will call this ``main`` function passing in a ``config`` object after adjusting the configuration
+    to reflect parameters passed on the command line.
 
     :param config:
     :type config: cea.config.Configuration
