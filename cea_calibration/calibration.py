@@ -123,10 +123,10 @@ def calc_score(static_params, dynamic_params):
     ##define fixed constant parameters (to be redefined by CEA config file)
     #Hs_ag = 0.15
     #Tcs_set_C = 28
-    Tcs_setb_C = 40
-    void_deck = 1
-    height_bg = 0
-    floors_bg = 0
+    # Tcs_setb_C = 40
+    # void_deck = 1
+    # height_bg = 0
+    # floors_bg = 0
 
     scenario_list = static_params['scenario_list']
     config = static_params['config']
