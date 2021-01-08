@@ -17,26 +17,32 @@ get_monthly_measurements:
       JANUARY:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       FEBRUARY:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       MARCH:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       APRIL:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       MAY:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       JUNE:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       JULY:
         description: monthly measurement for this month
@@ -45,22 +51,27 @@ get_monthly_measurements:
       AUGUST:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       SEPTEMBER:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       OCTOBER:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       NOVEMBER:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       DECEMBER:
         description: monthly measurement for this month
         type: float
+        unit: NA
         values: '{0.0...n}'
       VARIABLE:
         description: type of variable in CEA equivalent to monthly measurements
