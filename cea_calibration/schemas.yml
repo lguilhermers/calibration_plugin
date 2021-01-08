@@ -47,36 +47,37 @@ get_monthly_measurements:
       JULY:
         description: monthly measurement for this month
         type: float
+        unit: '[-]'
         values: '{0.0...n}'
       AUGUST:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       SEPTEMBER:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       OCTOBER:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       NOVEMBER:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       DECEMBER:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       VARIABLE:
         description: type of variable in CEA equivalent to monthly measurements
         type: string
-        unit: NA
+        unit: '[-]'
         values: alphanumeric
   used_by: [validation, calibration]
 
@@ -89,17 +90,17 @@ get_project_calibration_results:
       eval:
         description: Number of iteration
         type: integer
-        unit: NA
+        unit: '[-]'
         values: '{0...n}'
       SEED:
         description: Seed parameter, randomizes other parameters within a certain range for each building
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       Hs_ag:
         description: Fraction of above ground gross floor area air-conditioned.
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...1.0}'
       Tcs_set_C:
         description: Setpoint temperature for cooling system
@@ -119,36 +120,36 @@ get_project_calibration_results:
       Es:
         description: Fraction of gross floor area with electrical demands.
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...1.0}'
       Ns:
         description: Fraction of net gross floor area.
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...1.0}'
       Occ_m2pax:
         description: Occupancy density.
         type: float
-        unit: m2/pax
+        unit: '[m2/pax]'
         values: '{0.0...n}'
       Vww_lpdpax:
         description: Peak specific daily hot water consumption
         type: float
-        unit: L/day.pax
+        unit: '[L/day.pax]'
         values: '{0.0...n}'
       score_weighted_demand:
         description: total energy consumption from calibrated buildings
         type: integer
-        unit: kWh
+        unit: '[kWh]'
         values: '{0...n}'
       buildings_calibrated:
         description: number of buildings considered calibrated
         type: integer
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       percentage_buildings_calibrated_%:
         description: percentage of buildings considered calibrated
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...100.0}'
   used_by: [validation, calibration]
