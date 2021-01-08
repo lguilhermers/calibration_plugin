@@ -7,42 +7,42 @@ get_monthly_measurements:
       Name:
         description: Unique building ID, equivalent to the ID in CEA.
         type: string
-        unit: NA
+        unit: '[-]'
         values: alphanumeric
       ZipCode:
         description: Unique building ID which identifies the building in real life (optional).
         type: string
-        unit: NA
+        unit: '[-]'
         values: alphanumeric
       JANUARY:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       FEBRUARY:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       MARCH:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       APRIL:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       MAY:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       JUNE:
         description: monthly measurement for this month
         type: float
-        unit: NA
+        unit: '[-]'
         values: '{0.0...n}'
       JULY:
         description: monthly measurement for this month
@@ -105,17 +105,17 @@ get_project_calibration_results:
       Tcs_set_C:
         description: Setpoint temperature for cooling system
         type: float
-        unit: degrees C
+        unit: '[degrees C]'
         values: '{0.0...n}'
       Ea_Wm2:
         description: Peak specific electrical load due to appliances (computers and devices)
         type: float
-        unit: W/m2
+        unit: '[W/m2]'
         values: '{0.0...n}'
       El_Wm2:
         description: Peak specific electrical load due to artificial lighting
         type: float
-        unit: W/m2
+        unit: '[W/m2]'
         values: '{0.0...n}'
       Es:
         description: Fraction of gross floor area with electrical demands.
