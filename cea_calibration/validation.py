@@ -93,6 +93,7 @@ def validation(scenario_list,
             monthly_measured_data = pd.read_csv(locator.get_monthly_measurements())
 
             # loop in the measured buildings of this scenario
+            calib_building_names =[]
             for building_name in measured_building_names:  # number of buildings that have real data available
                 # extract measured data
                 print('For building', building_name, 'the errors are')
@@ -124,6 +125,8 @@ def validation(scenario_list,
                                                                              normalized_mean_biased_error)
 
                 # appending list of variables for later use
+                if ind_calib_building ==1:
+                    calib_building_names.append(building_name)
                 number_of_calibrated.append(ind_calib_building)
                 list_of_scores.append(ind_score_building)
             n_scenario_calib = sum(number_of_calibrated)
@@ -138,7 +141,8 @@ def validation(scenario_list,
         global_validation_n_calibrated.append(n_calib)
         global_validation_percentage.append((n_calib / number_of_buildings) * 100)
 
-    print('The number of calibrated buildings is', n_calib)
+    print('The number of calibrated buildings is', n_scenario_calib)
+    print('Calibrated buildings for', scenario_name, 'are', calib_building_names)
     print('The final score is', score)
     return score
 
