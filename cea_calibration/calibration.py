@@ -148,7 +148,8 @@ def calc_score(static_params, dynamic_params):
         # Changes and saves variables related to the architecture
         df_arch = dbf_to_dataframe(locator.get_building_architecture())
         number_of_buildings = df_arch.shape[0]
-        Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
+        # Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
+        Rand_it = 0
         df_arch.Es = Es*(1+Rand_it)
         df_arch.Ns = Ns*(1+Rand_it)
         df_arch.Hs_ag = Hs_ag*(1+Rand_it)
@@ -193,7 +194,7 @@ def calc_score(static_params, dynamic_params):
 
 
 def calibration(config, list_scenarios):
-    max_evals = 20 #maximum number of iterations allowed by the algorithm to run
+    max_evals = 2 #maximum number of iterations allowed by the algorithm to run
 
     #  define a search space
     DYNAMIC_PARAMETERS = OrderedDict([('SEED', scope.int(hp.uniform('SEED', 0.0, 100.0))),
@@ -264,8 +265,10 @@ def main(config):
     :type config: cea.config.Configuration
     :return:
     """
+    locator = cea.inputlocator.InputLocator(config.scenario, config.plugins)
     project_path = config.project
     measurement_files = sorted(glob2.glob(project_path + '/**/monthly_measurements.csv'))
+    rerun_best_iteration = True #if True, CEA will updates its inputs with the ones for the best iteration and rerun demand
 
     list_scenarios = []
     for f in measurement_files:
@@ -273,6 +276,41 @@ def main(config):
     print(list_scenarios[:])
 
     calibration(config, list_scenarios[:])
+
+    if rerun_best_iteration:
+        print('Running schedules and demand for the best scenario')
+        results = pd.read_csv(config.project + r'/output/calibration/calibration_results.csv')
+        ID_best = results['score_weighted_demand'].idxmin()
+
+        SEED = results['SEED'][ID_best]
+
+        df_arch = dbf_to_dataframe(locator.get_building_architecture())
+        df_intload = dbf_to_dataframe(locator.get_building_internal())
+        df_comfort = dbf_to_dataframe(locator.get_building_comfort())
+
+        number_of_buildings = df_arch.shape[0]
+        # Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
+        Rand_it = 0
+        df_arch.Es = results['Es'][ID_best]*(1+Rand_it)
+        df_arch.Ns = results['Ns'][ID_best]*(1+Rand_it)
+        df_arch.Hs_ag = results['Hs_ag'][ID_best]*(1+Rand_it)
+        df_intload.Occ_m2pax = results['Occ_m2pax'][ID_best]*(1+Rand_it)
+        df_intload.Vww_lpdpax = results['Vww_lpdpax'][ID_best]*(1+Rand_it)
+        df_intload.Ea_Wm2 = results['Ea_Wm2'][ID_best]*(1+Rand_it)
+        df_intload.El_Wm2 = results['El_Wm2'][ID_best]*(1+Rand_it)
+        df_comfort.Tcs_set_C = results['Tcs_set_C'][ID_best] * (1 + Rand_it)
+
+        dataframe_to_dbf(df_arch, locator.get_building_architecture())
+        dataframe_to_dbf(df_intload, locator.get_building_internal())
+        dataframe_to_dbf(df_comfort, locator.get_building_comfort())
+
+        measured_building_names = get_measured_building_names(locator)
+        config.schedule_maker.buildings = measured_building_names
+        schedule_maker.schedule_maker_main(locator, config)
+        config.demand.buildings = measured_building_names
+        demand_main.demand_calculation(locator, config)
+
+        print('Best scenario simulation completed')
 
 if __name__ == '__main__':
     main(cea.config.Configuration())
