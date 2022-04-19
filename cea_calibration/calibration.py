@@ -20,40 +20,6 @@ import numpy as np
 import glob2
 import os
 
-# def outputdatafolder(self):
-#     return self._ensure_folder(self.scenario, 'outputs', 'data')
-#
-#
-# def get_calibrationresults(self):
-#     """scenario/outputs/data/calibration_results/calibrationresults.csv"""
-#     return os.path.join(self.scenario, 'outputs', 'data', 'calibration_results', 'calibrationresults.csv')
-#
-#
-# def get_project_calibrationresults(self):
-#     """project/outputs/calibration_results/calibrationresults.csv"""
-#     return os.path.join(self.project, 'outputs', 'calibration_results', 'calibrationresults.csv')
-#
-#
-# def get_totaloccupancy(self):
-#     """scenario/outputs/data/totaloccupancy.csv"""
-#     return os.path.join(self.scenario, "outputs", "data", "totaloccupancy.csv")
-#
-#
-# def get_measurements_folder(self):
-#     return self._ensure_folder(self.scenario, 'inputs', 'measurements')
-#
-#
-# def get_annual_measurements(self):
-#     return os.path.join(self.get_measurements_folder(), 'annual_measurements.csv')
-#
-#
-# def get_monthly_measurements(self):
-#     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
-#
-#
-# def get_global_monthly_measurements(self):
-#     return os.path.join(self.get_measurements_folder(), 'monthly_measurements.csv')
-
 MONTHS_IN_YEAR_NAMES = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL',
                         'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER',
                         'OCTOBER', 'NOVEMBER', 'DECEMBER']
@@ -68,6 +34,7 @@ __email__ = "cea@arch.ethz.ch"
 __status__ = "Production"
 
 def modify_monthly_multiplier(locator, config, measured_building_names):
+
     ##create building input schedules to set monthly multiplier
     archetypes_mapper.archetypes_mapper(locator,
                       update_architecture_dbf=False,
@@ -279,6 +246,42 @@ def main(config):
 
     if rerun_best_iteration:
         print('Running schedules and demand for the best scenario')
+        for scenario in list_scenarios:
+            config.scenario = scenario
+            locator = cea.inputlocator.InputLocator(config.scenario, config.plugins)
+            results = pd.read_csv(config.project + r'/output/calibration/calibration_results.csv')
+            ID_best = results['score_weighted_demand'].idxmin()
+
+            SEED = results['SEED'][ID_best]
+
+            df_arch = dbf_to_dataframe(locator.get_building_architecture())
+            df_intload = dbf_to_dataframe(locator.get_building_internal())
+            df_comfort = dbf_to_dataframe(locator.get_building_comfort())
+
+            number_of_buildings = df_arch.shape[0]
+            # Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
+            Rand_it = 0
+            df_arch.Es = results['Es'][ID_best]*(1+Rand_it)
+            df_arch.Ns = results['Ns'][ID_best]*(1+Rand_it)
+            df_arch.Hs_ag = results['Hs_ag'][ID_best]*(1+Rand_it)
+            df_intload.Occ_m2pax = results['Occ_m2pax'][ID_best]*(1+Rand_it)
+            df_intload.Vww_lpdpax = results['Vww_lpdpax'][ID_best]*(1+Rand_it)
+            df_intload.Ea_Wm2 = results['Ea_Wm2'][ID_best]*(1+Rand_it)
+            df_intload.El_Wm2 = results['El_Wm2'][ID_best]*(1+Rand_it)
+            df_comfort.Tcs_set_C = results['Tcs_set_C'][ID_best] * (1 + Rand_it)
+
+            dataframe_to_dbf(df_arch, locator.get_building_architecture())
+            dataframe_to_dbf(df_intload, locator.get_building_internal())
+            dataframe_to_dbf(df_comfort, locator.get_building_comfort())
+
+            measured_building_names = get_measured_building_names(locator)
+            config.schedule_maker.buildings = measured_building_names
+            schedule_maker.schedule_maker_main(locator, config)
+            config.demand.buildings = measured_building_names
+            demand_main.demand_calculation(locator, config)
+
+        print('Best scenario simulation completed')
+
         results = pd.read_csv(config.project + r'/output/calibration/calibration_results.csv')
         ID_best = results['score_weighted_demand'].idxmin()
 
@@ -309,8 +312,6 @@ def main(config):
         schedule_maker.schedule_maker_main(locator, config)
         config.demand.buildings = measured_building_names
         demand_main.demand_calculation(locator, config)
-
-        print('Best scenario simulation completed')
 
 if __name__ == '__main__':
     main(cea.config.Configuration())
