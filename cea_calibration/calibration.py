@@ -115,8 +115,8 @@ def calc_score(static_params, dynamic_params):
         # Changes and saves variables related to the architecture
         df_arch = dbf_to_dataframe(locator.get_building_architecture())
         number_of_buildings = df_arch.shape[0]
-        # Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
-        Rand_it = 0
+        Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
+        # Rand_it = 0
         df_arch.Es = Es*(1+Rand_it)
         df_arch.Ns = Ns*(1+Rand_it)
         df_arch.Hs_ag = Hs_ag*(1+Rand_it)
@@ -161,18 +161,28 @@ def calc_score(static_params, dynamic_params):
 
 
 def calibration(config, list_scenarios):
-    max_evals = 2 #maximum number of iterations allowed by the algorithm to run
+    max_evals = 300 #maximum number of iterations allowed by the algorithm to run
 
     #  define a search space
+    # DYNAMIC_PARAMETERS = OrderedDict([('SEED', scope.int(hp.uniform('SEED', 0.0, 100.0))),
+    #                                   ('Hs_ag', hp.uniform('Hs_ag', 0.1, 0.25)),
+    #                                   ('Tcs_set_C', hp.uniform('Tcs_set_C', 24, 26)),
+    #                                   ('Es', hp.uniform('Es', 0.4, 0.6)),
+    #                                   ('Ns', hp.uniform('Ns', 0.4, 0.6)),
+    #                                   ('Occ_m2pax', hp.uniform('Occ_m2pax', 35.0, 45.0)),
+    #                                   ('Vww_lpdpax', hp.uniform('Vww_lpdpax', 25.0, 30.0)),
+    #                                   ('Ea_Wm2', hp.uniform('Ea_Wm2', 1, 2.5)),
+    #                                   ('El_Wm2', hp.uniform('El_Wm2', 1, 2.5))
+    #                                   ])
     DYNAMIC_PARAMETERS = OrderedDict([('SEED', scope.int(hp.uniform('SEED', 0.0, 100.0))),
-                                      ('Hs_ag', hp.uniform('Hs_ag', 0.1, 0.25)),
-                                      ('Tcs_set_C', hp.uniform('Tcs_set_C', 24, 26)),
-                                      ('Es', hp.uniform('Es', 0.4, 0.6)),
-                                      ('Ns', hp.uniform('Ns', 0.4, 0.6)),
-                                      ('Occ_m2pax', hp.uniform('Occ_m2pax', 35.0, 45.0)),
-                                      ('Vww_lpdpax', hp.uniform('Vww_lpdpax', 25.0, 30.0)),
-                                      ('Ea_Wm2', hp.uniform('Ea_Wm2', 1, 2.5)),
-                                      ('El_Wm2', hp.uniform('El_Wm2', 1, 2.5))
+                                      ('Hs_ag', hp.uniform('Hs_ag', 0.1, 0.40)),
+                                      ('Tcs_set_C', hp.uniform('Tcs_set_C', 22, 27)),
+                                      ('Es', hp.uniform('Es', 0.4, 0.9)),
+                                      ('Ns', hp.uniform('Ns', 0.4, 1.0)),
+                                      ('Occ_m2pax', hp.uniform('Occ_m2pax', 25.0, 50.0)),
+                                      ('Vww_lpdpax', hp.uniform('Vww_lpdpax', 20.0, 50.0)),
+                                      ('Ea_Wm2', hp.uniform('Ea_Wm2', 1, 8)),
+                                      ('El_Wm2', hp.uniform('El_Wm2', 1, 8))
                                       ])
     STATIC_PARAMS = {'scenario_list': list_scenarios, 'config': config}
 
@@ -259,8 +269,8 @@ def main(config):
             df_comfort = dbf_to_dataframe(locator.get_building_comfort())
 
             number_of_buildings = df_arch.shape[0]
-            # Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
-            Rand_it = 0
+            Rand_it = np.random.randint(low=-30, high=30, size=number_of_buildings) / 100
+            # Rand_it = 0
             df_arch.Es = results['Es'][ID_best]*(1+Rand_it)
             df_arch.Ns = results['Ns'][ID_best]*(1+Rand_it)
             df_arch.Hs_ag = results['Hs_ag'][ID_best]*(1+Rand_it)
